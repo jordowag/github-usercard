@@ -48,40 +48,53 @@
 */
 
 const url = "https://api.github.com/users/";
-// const friendsArray = ["jordowag", "tetondan","dustinmyers", "justsml", "luishrd", "bigknell"]
-friendsArray = ["jordowag"];
+const friendsArray = ["jordowag", "tetondan","dustinmyers", "justsml", "luishrd", "bigknell"];
+// GET Request to GitHub's API. Sends promise to create a card,
+// then appends the card to webpage.
 friendsArray.forEach((friend) => {
   axios.get(`${url}${friend}`)
     .then(createUserCard)
     .then(appendToPage)
-    .catch(printError)
+    .catch(printError);
 });
 let josh = "bigknell";
-// axios.get(`${url}${josh}`)
-//   .then((response) => {
-//     return response.data.followers_url
-//   })
-//   .then((followersURL) => {
-//     axios.get(followersURL)
-//       .then((response) => {
-//         response.data.forEach((user) => {
-//           console.log(user.url);
-//           axios.get(user.url)
-//             .then(createUserCard)
-//             .then(appendToPage)
-//             .catch(printError);
-//         });
-//       })
-//       .catch(printError);
-//   })
-//   .catch(printError);
+
+// Posts usercards for josh's followers
+// GET request to Josh's github info
+axios.get(`${url}${josh}`)
+  .then((response) => {
+    // Returns Josh's API Link for his followers
+    return response.data.followers_url
+  })
+  .then((followersURL) => {
+    // Another GET Request with newly obtained link
+    axios.get(followersURL)
+      // Data is an array of users
+      .then((response) => {
+        response.data.forEach((user) => {
+          console.log(user.url);
+          /* For each user, we do a request on their API and perform
+             the same methods to create and append user card
+          */
+          axios.get(user.url)
+            .then(createUserCard)
+            .then(appendToPage)
+            .catch(printError);
+        });
+      })
+      .catch(printError);
+  })
+  .catch(printError);
+
+// Creates user card, using the Promise retrieved by GitHub's API
+// Returns a div, containing information about one user!
 function createUserCard(response) {
   // Create Elements and Add Classes
-  console.log(response);
   let data = response.data;
   let card = document.createElement("div");
   card.classList.add("card");
-  card.style.height = "180px";
+  // initialize style so it can animate on first click
+  card.style.height = "180px"; 
   let avatar = document.createElement("img");
   let calendar = document.createElement("calendar");
   calendar.classList.add("calendar","hidden");
@@ -100,8 +113,7 @@ function createUserCard(response) {
   let button = document.createElement("p");
   button.classList.add("btn");
   let hiddenData = document.createElement("div");
-  hiddenData.classList.add("hidden-data");
-  hiddenData.classList.add("hidden");
+  hiddenData.classList.add("hidden-data", "hidden");
   let company = document.createElement("p");
   let blog = document.createElement("p");
   let blogURL = document.createElement("a");
@@ -145,6 +157,7 @@ function createUserCard(response) {
   return card;
 }
 
+// Appends user's card to the cards div.
 function appendToPage(user){
   let cards = document.querySelector(".cards");
   cards.append(user);
