@@ -83,6 +83,8 @@ function createUserCard(response) {
   card.classList.add("card");
   card.style.height = "180px";
   let avatar = document.createElement("img");
+  let calendar = document.createElement("calendar");
+  calendar.classList.add("calendar","hidden");
   let info = document.createElement("div");
   info.classList.add("card-info");
   let name = document.createElement("h3");
@@ -103,14 +105,6 @@ function createUserCard(response) {
   let company = document.createElement("p");
   let blog = document.createElement("p");
   let blogURL = document.createElement("a");
-
-  
-  // Create Structure
-  card.append(avatar,info);
-  info.append(name,username,location,profile,followerCount,followingCount,biography, button, hiddenData);
-  profile.append(pageURL);
-  hiddenData.append(company,blog);
-  blog.append(blogURL);
   // Add text content
   avatar.src = data.avatar_url;
   name.textContent = data.name;
@@ -126,18 +120,28 @@ function createUserCard(response) {
   blog.textContent = "Blog: ";
   blogURL.href = data.blog;
   blogURL.textContent = data.blog;
+  // Create Structure
+  card.append(avatar,info,calendar);
+  info.append(name,username,location,profile,followerCount,followingCount,biography, button, hiddenData);
+  profile.append(pageURL);
+  hiddenData.append(company,blog);
+  blog.append(blogURL);
   // Event handlers
   button.addEventListener("click", (event) => {
     if (card.style.height == "180px") {
-      TweenLite.to(card,1,{height: 220});
+      TweenLite.to(card,1,{height: 300});
       setTimeout(function(){
         hiddenData.classList.remove("hidden");
-      }, 250);
+        calendar.classList.remove("hidden");
+      }, 350);
     } else {
       hiddenData.classList.add("hidden");
+      calendar.classList.add("hidden");
       TweenLite.to(card,1,{height: 180});
+
     }
   });
+  GitHubCalendar(calendar,data.login,{responsive:true});
   return card;
 }
 
