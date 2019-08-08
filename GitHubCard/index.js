@@ -48,21 +48,40 @@
 */
 
 const url = "https://api.github.com/users/";
-const friendsArray = ["jordowag", "tetondan","dustinmyers", "justsml", "luishrd", "bigknell"]
+// const friendsArray = ["jordowag", "tetondan","dustinmyers", "justsml", "luishrd", "bigknell"]
+friendsArray = ["jordowag"];
 friendsArray.forEach((friend) => {
   axios.get(`${url}${friend}`)
     .then(createUserCard)
     .then(appendToPage)
-    .catch((err) => {
-      console.log(err);
-    });
+    .catch(printError)
 });
+let josh = "bigknell";
+// axios.get(`${url}${josh}`)
+//   .then((response) => {
+//     return response.data.followers_url
+//   })
+//   .then((followersURL) => {
+//     axios.get(followersURL)
+//       .then((response) => {
+//         response.data.forEach((user) => {
+//           console.log(user.url);
+//           axios.get(user.url)
+//             .then(createUserCard)
+//             .then(appendToPage)
+//             .catch(printError);
+//         });
+//       })
+//       .catch(printError);
+//   })
+//   .catch(printError);
 function createUserCard(response) {
   // Create Elements and Add Classes
   console.log(response);
   let data = response.data;
   let card = document.createElement("div");
   card.classList.add("card");
+  card.style.height = "180px";
   let avatar = document.createElement("img");
   let info = document.createElement("div");
   info.classList.add("card-info");
@@ -76,19 +95,49 @@ function createUserCard(response) {
   let followerCount = document.createElement("p");
   let followingCount = document.createElement("p");
   let biography = document.createElement("p");
+  let button = document.createElement("p");
+  button.classList.add("btn");
+  let hiddenData = document.createElement("div");
+  hiddenData.classList.add("hidden-data");
+  hiddenData.classList.add("hidden");
+  let company = document.createElement("p");
+  let blog = document.createElement("p");
+  let blogURL = document.createElement("a");
+
+  
   // Create Structure
   card.append(avatar,info);
-  info.append(name,username,location,profile,followerCount,followingCount,biography);
+  info.append(name,username,location,profile,followerCount,followingCount,biography, button, hiddenData);
   profile.append(pageURL);
+  hiddenData.append(company,blog);
+  blog.append(blogURL);
   // Add text content
   avatar.src = data.avatar_url;
   name.textContent = data.name;
   username.textContent = data.login;
-  location.textContent = data.location;
+  location.textContent = `Location: ${data.location}`;
+  profile.textContent = "Profile: "
   pageURL.href = data.html_url;
   pageURL.textContent = data.html_url;
-  followerCount.textContent = data.followers;
-  followingCount.textContent = data.following;
+  followerCount.textContent = `Followers: ${data.followers}`;
+  followingCount.textContent = `Following: ${data.following}`;
+  company.textContent = `Company: ${data.company}`;
+  button.textContent = "read more"
+  blog.textContent = "Blog: ";
+  blogURL.href = data.blog;
+  blogURL.textContent = data.blog;
+  // Event handlers
+  button.addEventListener("click", (event) => {
+    if (card.style.height == "180px") {
+      TweenLite.to(card,1,{height: 220});
+      setTimeout(function(){
+        hiddenData.classList.remove("hidden");
+      }, 250);
+    } else {
+      hiddenData.classList.add("hidden");
+      TweenLite.to(card,1,{height: 180});
+    }
+  });
   return card;
 }
 
@@ -97,6 +146,9 @@ function appendToPage(user){
   cards.append(user);
 }
 
+function printError(err){
+  console.log(err);
+}
 /* List of LS Instructors Github username's: 
   tetondan
   dustinmyers
